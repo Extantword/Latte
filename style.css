@@ -1,0 +1,225 @@
+/* ── Aero Beige Design Tokens ──────────────────────────────────────── */
+:root {
+  --bg-page:      #ede7d5;
+  --bg-gradient:  linear-gradient(135deg, #f0ead8 0%, #e8dfc8 50%, #f2ebd9 100%);
+  --bg-col:       rgba(255, 250, 238, 0.55);
+  --glass-bg:     rgba(255, 246, 220, 0.32);
+  --glass-border: rgba(255, 255, 255, 0.52);
+  --glass-shadow: 0 6px 40px rgba(60, 40, 10, 0.20),
+                  inset 0 1px 0 rgba(255,255,255,0.6);
+  --divider:      rgba(180, 160, 120, 0.35);
+  --text:         #2c2416;
+  --text-muted:   #7a6a4e;
+  --accent:       #b8912a;
+  --panel-w:      260px;
+  --radius:       14px;
+  --transition:   0.28s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── Reset & Base ───────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: var(--text);
+  background: var(--bg-gradient);
+}
+
+/* Subtle animated grain for depth (vista-like) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Main Layout ────────────────────────────────────────────────────── */
+#app {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  position: relative;
+  z-index: 1;
+}
+
+.column {
+  flex: 1;
+  overflow: auto;
+  background: var(--bg-col);
+  position: relative;
+}
+
+.editor-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.divider {
+  width: 1px;
+  flex-shrink: 0;
+  background: var(--divider);
+  box-shadow: 1px 0 4px rgba(100, 80, 30, 0.08);
+}
+
+/* Preview iframe fills its column */
+#preview-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #fff;
+  display: block;
+}
+
+/* ── CodeMirror editor fill ─────────────────────────────────────────── */
+.editor-col .cm-editor {
+  height: 100%;
+}
+.editor-col .cm-scroller {
+  overflow: auto;
+  padding: 2rem 2.5rem;
+  line-height: 1.7;
+}
+
+/* ── Hover Trigger Zones (invisible) ────────────────────────────────── */
+.hover-zone {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 44px;
+  z-index: 50;
+  cursor: default;
+}
+.hover-zone.left  { left: 0; }
+.hover-zone.right { right: 0; }
+
+/* ── Aero Glass Side Panels ─────────────────────────────────────────── */
+.side-panel {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: var(--panel-w);
+  padding: 2.2rem 1.6rem 2rem;
+  background: var(--glass-bg);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+  /* hidden by default */
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--transition), opacity var(--transition);
+}
+
+.side-panel.left {
+  left: 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+  transform: translateX(calc(-1 * var(--panel-w) - 10px));
+}
+
+.side-panel.right {
+  right: 0;
+  border-radius: var(--radius) 0 0 var(--radius);
+  transform: translateX(calc(var(--panel-w) + 10px));
+}
+
+.side-panel.open {
+  transform: translateX(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* inner glass highlight line at top */
+.side-panel::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 12px; right: 12px;
+  height: 1px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 0 0 4px 4px;
+}
+
+/* ── Panel Typography ───────────────────────────────────────────────── */
+.panel-logo {
+  font-size: 1.3rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+.panel-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: -1rem;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.panel-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+/* ── Buttons ────────────────────────────────────────────────────────── */
+button {
+  display: block;
+  width: 100%;
+  padding: 0.5rem 0.9rem;
+  background: rgba(255, 245, 210, 0.55);
+  border: 1px solid rgba(200, 175, 110, 0.5);
+  border-radius: 8px;
+  font-size: 0.82rem;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s, box-shadow 0.15s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08),
+              inset 0 1px 0 rgba(255,255,255,0.5);
+}
+button:hover {
+  background: rgba(255, 245, 210, 0.85);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12),
+              inset 0 1px 0 rgba(255,255,255,0.7);
+}
+button:active {
+  transform: translateY(1px);
+}
+
+/* ── Font-size range slider ─────────────────────────────────────────── */
+.range-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.range-row .big-a { font-size: 1.1rem; }
+.range-row input[type=range] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+/* ── Scrollbar Styling ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(160, 140, 90, 0.35);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(160, 140, 90, 0.6);
+}
