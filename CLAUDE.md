@@ -1,0 +1,1 @@
+THe idea is to create a high-quality LaTeX editor. When the user is writing latex, there are just two blank columns: The text and the real-time latex. UI appears when the user hovers the mouse to the sides of the page. The page uses beige colors, transparencies (think windows vista, aero)
