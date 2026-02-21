@@ -33,6 +33,10 @@
       <button id="btn-new">New document</button>
       <button id="btn-copy">Copy source</button>
     </div>
+    <div class="panel-section panel-section--grow">
+      <span class="panel-label">Files</span>
+      <div id="file-tree" class="file-tree"></div>
+    </div>
   </aside>
 
   <!-- Right Aero glass panel -->
@@ -58,8 +62,65 @@
     <div class="divider"></div>
     <div id="preview-col" class="column preview-col">
       <iframe id="preview-frame" title="LaTeX Preview" sandbox="allow-same-origin allow-scripts"></iframe>
+      <div id="error-box" class="error-box hidden"></div>
     </div>
   </main>
+
+  <!-- New Document modal -->
+  <div id="new-doc-modal" class="modal-overlay hidden">
+    <div class="modal-dialog">
+      <h3 class="modal-title">New Document</h3>
+
+      <div class="modal-field">
+        <label for="new-doc-name">Name</label>
+        <input id="new-doc-name" type="text" placeholder="My Document" autocomplete="off" />
+      </div>
+
+      <div class="modal-field">
+        <label for="new-doc-folder">Folder <span class="modal-optional">(optional)</span></label>
+        <input id="new-doc-folder" type="text" placeholder="e.g. Research or Research/Chapter 1" autocomplete="off" />
+      </div>
+
+      <div class="modal-field">
+        <span class="modal-fieldlabel">Template</span>
+        <div class="modal-templates">
+          <label class="tpl-option">
+            <input type="radio" name="tpl" value="blank" checked />
+            <span>
+              <strong>Blank</strong>
+              <small>Empty document</small>
+            </span>
+          </label>
+          <label class="tpl-option">
+            <input type="radio" name="tpl" value="article" />
+            <span>
+              <strong>Article</strong>
+              <small>Intro + math example</small>
+            </span>
+          </label>
+          <label class="tpl-option">
+            <input type="radio" name="tpl" value="math" />
+            <span>
+              <strong>Math</strong>
+              <small>Equations &amp; calculus</small>
+            </span>
+          </label>
+          <label class="tpl-option">
+            <input type="radio" name="tpl" value="letter" />
+            <span>
+              <strong>Letter</strong>
+              <small>Formal letter</small>
+            </span>
+          </label>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-cancel-doc" class="btn-secondary">Cancel</button>
+        <button id="btn-create-doc" class="btn-primary">Create</button>
+      </div>
+    </div>
+  </div>
 
   <script type="module" src="main.js"></script>
 </body>
