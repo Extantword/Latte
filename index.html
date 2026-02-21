@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Latte</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="importmap">
+  {
+    "imports": {
+      "@codemirror/state":     "https://esm.sh/@codemirror/state@6",
+      "@codemirror/view":      "https://esm.sh/@codemirror/view@6",
+      "@codemirror/commands":  "https://esm.sh/@codemirror/commands@6",
+      "@codemirror/language":  "https://esm.sh/@codemirror/language@6",
+      "@codemirror/lint":      "https://esm.sh/@codemirror/lint@6",
+      "@lezer/common":         "https://esm.sh/@lezer/common@1",
+      "codemirror-lang-latex": "https://esm.sh/codemirror-lang-latex"
+    }
+  }
+  </script>
+</head>
+<body>
+  <!-- Invisible hover trigger zones at the edges of the viewport -->
+  <div id="hover-left"  class="hover-zone left"></div>
+  <div id="hover-right" class="hover-zone right"></div>
+
+  <!-- Left Aero glass panel -->
+  <aside id="panel-left" class="side-panel left">
+    <div class="panel-logo">☕ Latte</div>
+    <p class="panel-hint">LaTeX Editor</p>
+    <div class="panel-section">
+      <span class="panel-label">Document</span>
+      <button id="btn-new">New document</button>
+      <button id="btn-copy">Copy source</button>
+    </div>
+  </aside>
+
+  <!-- Right Aero glass panel -->
+  <aside id="panel-right" class="side-panel right">
+    <div class="panel-logo">View</div>
+    <div class="panel-section">
+      <span class="panel-label">Editor font size</span>
+      <div class="range-row">
+        <span>A</span>
+        <input id="font-size" type="range" min="10" max="24" value="15" />
+        <span class="big-a">A</span>
+      </div>
+    </div>
+    <div class="panel-section">
+      <span class="panel-label">Export</span>
+      <button id="btn-copy-html">Copy rendered HTML</button>
+    </div>
+  </aside>
+
+  <!-- Main two-column layout -->
+  <main id="app">
+    <div id="editor-col"  class="column editor-col"></div>
+    <div class="divider"></div>
+    <div id="preview-col" class="column preview-col">
+      <iframe id="preview-frame" title="LaTeX Preview" sandbox="allow-same-origin allow-scripts"></iframe>
+    </div>
+  </main>
+
+  <script type="module" src="main.js"></script>
+</body>
+</html>
