@@ -112,6 +112,7 @@ body::before {
   display: flex;
   flex-direction: column;
   gap: 1.6rem;
+  overflow: hidden;   /* file-tree scrolls within its own section */
   /* hidden by default */
   opacity: 0;
   pointer-events: none;
@@ -211,6 +212,281 @@ button:active {
 .range-row input[type=range] {
   flex: 1;
   accent-color: var(--accent);
+}
+
+/* ── Utility ────────────────────────────────────────────────────────── */
+.hidden { display: none !important; }
+
+/* ── Preview column: relative so error-box can be absolute ──────────── */
+.preview-col { position: relative; }
+
+/* ── Error box (shown when LaTeX fails to parse) ───────────────────── */
+.error-box {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 0.75rem 1.25rem;
+  background: rgba(255, 232, 228, 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-top: 2px solid #c0392b;
+  color: #7b1a0a;
+  font-size: 0.76rem;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  white-space: pre-wrap;
+  max-height: 160px;
+  overflow-y: auto;
+  z-index: 10;
+}
+
+.error-box::before {
+  content: '⚠ LaTeX error: ';
+  font-weight: 700;
+  display: block;
+  margin-bottom: 0.25rem;
+  font-family: system-ui, sans-serif;
+  font-size: 0.78rem;
+}
+
+/* ── Left panel file-tree section grows to fill remaining space ─────── */
+.panel-section--grow {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* ── File Tree ──────────────────────────────────────────────────────── */
+.file-tree {
+  flex: 1;
+  overflow-y: auto;
+  margin-top: 0.25rem;
+}
+
+.file-tree-empty {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 0.25rem 0.5rem;
+}
+
+.file-tree-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.file-tree-item {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  color: var(--text);
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 0.12s;
+  user-select: none;
+}
+
+.file-tree-item:hover {
+  background: rgba(200, 175, 100, 0.20);
+}
+
+.file-tree-item.active {
+  background: rgba(184, 145, 42, 0.25);
+  font-weight: 600;
+}
+
+/* Folder header */
+.file-tree-folder-header {
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+
+.file-tree-folder-header:hover {
+  background: rgba(200, 175, 100, 0.20);
+}
+
+/* Indented children */
+.file-tree-children {
+  padding-left: 0.9rem;
+  padding-top: 0.1rem;
+}
+
+/* Collapsed folder hides its children */
+.file-tree-folder-item.collapsed > .file-tree-children {
+  display: none;
+}
+
+/* ── Modal Overlay ──────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(44, 36, 22, 0.38);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  z-index: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Modal Dialog ───────────────────────────────────────────────────── */
+.modal-dialog {
+  width: 380px;
+  padding: 2rem 1.8rem;
+  background: rgba(255, 248, 228, 0.82);
+  -webkit-backdrop-filter: blur(22px) saturate(180%);
+  backdrop-filter: blur(22px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 16px 56px rgba(60, 40, 10, 0.28),
+              inset 0 1px 0 rgba(255, 255, 255, 0.65);
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  position: relative;
+}
+
+/* Glass highlight rim at top */
+.modal-dialog::after {
+  content: '';
+  position: absolute;
+  top: 0; left: 12px; right: 12px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.75);
+  border-radius: 0 0 4px 4px;
+}
+
+.modal-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+/* ── Modal form fields ──────────────────────────────────────────────── */
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.modal-field label,
+.modal-fieldlabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.modal-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 0.72rem;
+}
+
+.modal-field input[type="text"] {
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  background: rgba(255, 252, 240, 0.70);
+  border: 1px solid rgba(200, 175, 110, 0.55);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  font-family: inherit;
+}
+
+.modal-field input[type="text"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(184, 145, 42, 0.18);
+}
+
+/* ── Template radio cards ───────────────────────────────────────────── */
+.modal-templates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.tpl-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  background: rgba(255, 248, 220, 0.55);
+  border: 1px solid rgba(200, 175, 110, 0.40);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.tpl-option:hover {
+  background: rgba(255, 245, 205, 0.80);
+  border-color: rgba(184, 145, 42, 0.45);
+}
+
+.tpl-option input[type="radio"] {
+  margin-top: 2px;
+  accent-color: var(--accent);
+  flex-shrink: 0;
+}
+
+.tpl-option span {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.tpl-option strong {
+  font-size: 0.82rem;
+  color: var(--text);
+}
+
+.tpl-option small {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+/* ── Modal action buttons ───────────────────────────────────────────── */
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.2rem;
+}
+
+/* Override the global "block/full-width" button rule for modal buttons */
+.modal-actions button {
+  display: inline-block;
+  width: auto;
+}
+
+.btn-primary {
+  background: rgba(184, 145, 42, 0.75) !important;
+  border-color: rgba(184, 145, 42, 0.85) !important;
+  color: #fff !important;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  background: rgba(184, 145, 42, 0.95) !important;
+}
+
+.btn-secondary {
+  background: rgba(255, 245, 210, 0.55) !important;
 }
 
 /* ── Scrollbar Styling ──────────────────────────────────────────────── */
