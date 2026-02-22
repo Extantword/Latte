@@ -153,7 +153,20 @@ async function renderLatex(src) {
     const { parse, HtmlGenerator } = await getLatex()
     const generator = new HtmlGenerator({ hyphenate: false })
     const doc  = parse(src, { generator }).htmlDocument()
-    // Inject a small style reset so the iframe looks clean
+    // KaTeX CSS — latex.js uses KaTeX for math; without this stylesheet
+    // all math symbols render as unstyled raw text
+    const katexCSS = doc.createElement('link')
+    katexCSS.rel  = 'stylesheet'
+    katexCSS.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'
+    doc.head.appendChild(katexCSS)
+
+    // latex.js document CSS — handles sectioning, lists, spacing, etc.
+    const latexCSS = doc.createElement('link')
+    latexCSS.rel  = 'stylesheet'
+    latexCSS.href = 'https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/latex.css'
+    doc.head.appendChild(latexCSS)
+
+    // Small style reset / typography overrides
     const style = doc.createElement('style')
     style.textContent = `
       body { font-family: 'Georgia', serif; padding: 3rem 4rem;
