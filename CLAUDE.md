@@ -41,8 +41,9 @@ CLAUDE.md    — This file
 It emits KaTeX HTML into the generated document, but does **not** bundle the KaTeX
 stylesheet. Without it, all math renders as unstyled or broken text.
 
-The fix (already in place in `renderLatex`, `main.js`): inject two `<link>` tags
-into the generated iframe `<head>` **before** setting `frame.srcdoc`:
+The fix (already in place in `renderLatex`, `main.js`):
+
+1. Inject two `<link>` tags into the generated iframe `<head>`:
 
 ```js
 // KaTeX CSS — must come first
@@ -51,7 +52,19 @@ katexCSS.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'
 latexCSS.href = 'https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/latex.css'
 ```
 
-Do not remove these or math will break again.
+2. **Also inline** the critical MathML-hiding rule in the `<style>` block, because
+   if the CDN `<link>` hasn't loaded yet the `.katex-mathml` span (which holds
+   a MathML fallback for screen readers) renders as plain text alongside the
+   pretty KaTeX HTML — making every formula appear twice:
+
+```css
+.katex .katex-mathml {
+  position: absolute; clip: rect(1px,1px,1px,1px);
+  padding: 0; border: 0; height: 1px; width: 1px; overflow: hidden;
+}
+```
+
+Do not remove either piece or math will either break or double-render.
 
 ---
 

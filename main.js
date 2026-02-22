@@ -166,13 +166,21 @@ async function renderLatex(src) {
     latexCSS.href = 'https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/latex.css'
     doc.head.appendChild(latexCSS)
 
-    // Small style reset / typography overrides
+    // Small style reset / typography overrides.
+    // Also inline the critical KaTeX rule that hides the MathML accessibility
+    // span (.katex-mathml) — KaTeX normally does this via its CDN stylesheet,
+    // but if that link hasn't loaded yet the MathML renders as plain text
+    // alongside the pretty HTML rendering, causing each formula to appear twice.
     const style = doc.createElement('style')
     style.textContent = `
       body { font-family: 'Georgia', serif; padding: 3rem 4rem;
              max-width: 780px; margin: 0 auto; line-height: 1.65;
              color: #1a1208; background: #fff; }
       @media (max-width: 600px) { body { padding: 1.5rem 1rem; } }
+      .katex .katex-mathml {
+        position: absolute; clip: rect(1px,1px,1px,1px);
+        padding: 0; border: 0; height: 1px; width: 1px; overflow: hidden;
+      }
     `
     doc.head.appendChild(style)
     frame.srcdoc = '<!DOCTYPE html>' + doc.documentElement.outerHTML
