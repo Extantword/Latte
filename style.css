@@ -74,15 +74,48 @@ body::before {
   display: block;
 }
 
+/* ── Editor wrapper (fills editor-col above the vim statusline) ─────── */
+.editor-wrap {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
 /* ── CodeMirror editor fill ─────────────────────────────────────────── */
-.editor-col .cm-editor {
+.editor-wrap .cm-editor {
   height: 100%;
 }
-.editor-col .cm-scroller {
+.editor-wrap .cm-scroller {
   overflow: auto;
   padding: 2rem 2.5rem;
   line-height: 1.7;
 }
+
+/* ── Vim mode statusline ─────────────────────────────────────────────── */
+.vim-mode-indicator {
+  flex-shrink: 0;
+  padding: 0.18rem 2.5rem;
+  font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  height: 1.55rem;
+  display: flex;
+  align-items: center;
+  user-select: none;
+  pointer-events: none;
+  border-top: 1px solid rgba(180, 160, 120, 0.28);
+  background: rgba(237, 231, 213, 0.70);
+  color: transparent; /* hidden when NORMAL — show only when mode text is set */
+}
+
+/* INSERT — soft green */
+.vim-mode-indicator[data-mode="insert"]  { color: #3a6e3a; }
+/* VISUAL / VISUAL LINE / VISUAL BLOCK — violet */
+.vim-mode-indicator[data-mode="visual"]  { color: #6b3fa0; }
+/* REPLACE — warm red */
+.vim-mode-indicator[data-mode="replace"] { color: #8b2020; }
 
 /* ── Hover Trigger Zones (invisible) ────────────────────────────────── */
 .hover-zone {

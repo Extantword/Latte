@@ -28,6 +28,7 @@ CLAUDE.md    — This file
 | Concern | Library | How it's loaded |
 |---|---|---|
 | Source editor | CodeMirror 6 (`@codemirror/*@6`) | ESM import-map → esm.sh CDN |
+| Vim modal editing | `@replit/codemirror-vim` | same import-map (`?external=` so it shares CM6 instances) |
 | LaTeX syntax highlighting | `codemirror-lang-latex` | same import-map |
 | LaTeX → HTML compilation | `latex.js@0.12.6` | dynamic `import()` at first render (cached in `latexModule`) |
 | Math rendering inside latex.js | KaTeX (bundled inside latex.js) | needs **katex CSS** linked in iframe head |
@@ -84,6 +85,33 @@ Do not remove any of these three layers or math will break or double-render.
 --radius       14px
 --transition   0.28s cubic-bezier(.4,0,.2,1)
 ```
+
+---
+
+## Vim Modal Editor
+
+The editor runs in full vim modal mode via `@replit/codemirror-vim`.
+
+**Import map caveat**: the package is loaded with `?external=@codemirror/state,...` so
+esm.sh does **not** bundle its own copies of `@codemirror/*`. Instead the bare specifiers
+are resolved by the browser's import map, ensuring a single shared module instance (required
+for CodeMirror extensions to register correctly).
+
+**Mode statusline**: `#vim-mode-indicator` (`.vim-mode-indicator`) sits below the editor
+in its own flex row inside `#editor-col`. Its `data-mode` attribute drives the text colour
+via CSS attribute selectors. The text is updated by listening to the `vim-mode-change`
+CustomEvent dispatched on `view.contentDOM`:
+
+| Mode | Text shown | Colour |
+|---|---|---|
+| normal | *(empty)* | — |
+| insert | `-- INSERT --` | green |
+| visual | `-- VISUAL --` / `-- VISUAL LINE --` / `-- VISUAL BLOCK --` | violet |
+| replace | `-- REPLACE --` | red |
+
+**Layout**: `#editor-col` is a flex column. `#editor-wrap` grows to fill available space
+(`flex: 1; min-height: 0`) and hosts the CodeMirror instance. The indicator bar is
+`flex-shrink: 0` below it.
 
 ---
 

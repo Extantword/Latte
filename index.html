@@ -12,9 +12,11 @@
       "@codemirror/view":      "https://esm.sh/@codemirror/view@6",
       "@codemirror/commands":  "https://esm.sh/@codemirror/commands@6",
       "@codemirror/language":  "https://esm.sh/@codemirror/language@6",
+      "@codemirror/search":    "https://esm.sh/@codemirror/search@6",
       "@codemirror/lint":      "https://esm.sh/@codemirror/lint@6",
       "@lezer/common":         "https://esm.sh/@lezer/common@1",
-      "codemirror-lang-latex": "https://esm.sh/codemirror-lang-latex"
+      "codemirror-lang-latex": "https://esm.sh/codemirror-lang-latex",
+      "@replit/codemirror-vim": "https://esm.sh/@replit/codemirror-vim?external=@codemirror/state,@codemirror/view,@codemirror/commands,@codemirror/language,@codemirror/search"
     }
   }
   </script>
@@ -58,7 +60,10 @@
 
   <!-- Main two-column layout -->
   <main id="app">
-    <div id="editor-col"  class="column editor-col"></div>
+    <div id="editor-col"  class="column editor-col">
+      <div id="editor-wrap" class="editor-wrap"></div>
+      <div id="vim-mode-indicator" class="vim-mode-indicator" data-mode="normal"></div>
+    </div>
     <div class="divider"></div>
     <div id="preview-col" class="column preview-col">
       <iframe id="preview-frame" title="LaTeX Preview" sandbox="allow-same-origin allow-scripts"></iframe>
