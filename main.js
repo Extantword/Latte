@@ -6,6 +6,7 @@ import { defaultKeymap, history, historyKeymap,
 import { syntaxHighlighting, defaultHighlightStyle,
          indentOnInput, bracketMatching }            from '@codemirror/language'
 import { latex }                                     from 'codemirror-lang-latex'
+import { vim }                                       from '@replit/codemirror-vim'
 
 // ── Default LaTeX document ──────────────────────────────────────────
 const DEFAULT_DOC = `\\documentclass{article}
@@ -222,6 +223,13 @@ const editorTheme = EditorView.theme({
     borderLeftColor: '#5c4a1e',
     borderLeftWidth: '2px',
   },
+  // Vim normal-mode block cursor
+  '&.cm-focused .cm-fat-cursor': {
+    background: 'rgba(184, 145, 42, 0.70)',
+    borderColor:  'transparent',
+    borderRadius: '1px',
+    color: '#fff',
+  },
   '.cm-activeLine':      { background: 'rgba(200,175,100,0.10)' },
   '.cm-selectionMatch':  { background: 'rgba(200,175,100,0.22)' },
   '&.cm-focused .cm-selectionBackground, .cm-selectionBackground':
@@ -238,6 +246,7 @@ const view = new EditorView({
   state: EditorState.create({
     doc: DEFAULT_DOC,
     extensions: [
+      vim(),
       history(),
       drawSelection(),
       dropCursor(),
@@ -258,7 +267,25 @@ const view = new EditorView({
       }),
     ],
   }),
-  parent: document.getElementById('editor-col'),
+  parent: document.getElementById('editor-wrap'),
+})
+
+// ── Vim mode indicator ────────────────────────────────────────────────
+const modeIndicator = document.getElementById('vim-mode-indicator')
+view.contentDOM.addEventListener('vim-mode-change', e => {
+  const { mode, subMode } = e.detail
+  modeIndicator.dataset.mode = mode
+  if (mode === 'insert') {
+    modeIndicator.textContent = '-- INSERT --'
+  } else if (mode === 'replace') {
+    modeIndicator.textContent = '-- REPLACE --'
+  } else if (mode === 'visual') {
+    if (subMode === 'linewise')  modeIndicator.textContent = '-- VISUAL LINE --'
+    else if (subMode === 'blockwise') modeIndicator.textContent = '-- VISUAL BLOCK --'
+    else modeIndicator.textContent = '-- VISUAL --'
+  } else {
+    modeIndicator.textContent = ''   // NORMAL — quiet, like real vim
+  }
 })
 
 // Initial render
