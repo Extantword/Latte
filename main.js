@@ -166,21 +166,21 @@ async function renderLatex(src) {
     latexCSS.href = 'https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/latex.css'
     doc.head.appendChild(latexCSS)
 
-    // Small style reset / typography overrides.
-    // Also inline the critical KaTeX rule that hides the MathML accessibility
-    // span (.katex-mathml) — KaTeX normally does this via its CDN stylesheet,
-    // but if that link hasn't loaded yet the MathML renders as plain text
-    // alongside the pretty HTML rendering, causing each formula to appear twice.
+    // KaTeX outputs each formula twice: .katex-html (pretty rendering) and
+    // .katex-mathml (MathML for screen readers). Without KaTeX's full CSS
+    // the MathML renders as plain text next to the rendered version, causing
+    // every formula to appear twice. Strip those elements from the DOM
+    // entirely so they never reach the iframe, and add a display:none
+    // fallback for any the selector misses (e.g. version differences).
+    doc.querySelectorAll('.katex-mathml').forEach(el => el.remove())
+
     const style = doc.createElement('style')
     style.textContent = `
       body { font-family: 'Georgia', serif; padding: 3rem 4rem;
              max-width: 780px; margin: 0 auto; line-height: 1.65;
              color: #1a1208; background: #fff; }
       @media (max-width: 600px) { body { padding: 1.5rem 1rem; } }
-      .katex .katex-mathml {
-        position: absolute; clip: rect(1px,1px,1px,1px);
-        padding: 0; border: 0; height: 1px; width: 1px; overflow: hidden;
-      }
+      .katex-mathml { display: none !important; }
     `
     doc.head.appendChild(style)
     frame.srcdoc = '<!DOCTYPE html>' + doc.documentElement.outerHTML

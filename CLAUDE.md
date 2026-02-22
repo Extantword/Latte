@@ -41,30 +41,30 @@ CLAUDE.md    — This file
 It emits KaTeX HTML into the generated document, but does **not** bundle the KaTeX
 stylesheet. Without it, all math renders as unstyled or broken text.
 
-The fix (already in place in `renderLatex`, `main.js`):
+The fix (already in place in `renderLatex`, `main.js`) has three layers:
 
-1. Inject two `<link>` tags into the generated iframe `<head>`:
+1. **CDN stylesheets** — inject two `<link>` tags into the iframe `<head>`:
 
 ```js
-// KaTeX CSS — must come first
 katexCSS.href = 'https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css'
-// latex.js document CSS — sectioning, lists, spacing
 latexCSS.href = 'https://cdn.jsdelivr.net/npm/latex.js@0.12.6/dist/latex.css'
 ```
 
-2. **Also inline** the critical MathML-hiding rule in the `<style>` block, because
-   if the CDN `<link>` hasn't loaded yet the `.katex-mathml` span (which holds
-   a MathML fallback for screen readers) renders as plain text alongside the
-   pretty KaTeX HTML — making every formula appear twice:
+2. **DOM removal** — KaTeX outputs each formula twice: `.katex-html` (the pretty
+   rendering) and `.katex-mathml` (a MathML tree for screen readers). Without
+   KaTeX's full CSS the MathML renders as plain unstyled text next to the
+   rendered version, making every formula appear twice. We strip those elements
+   from the document **before** serialising to `srcdoc`:
 
-```css
-.katex .katex-mathml {
-  position: absolute; clip: rect(1px,1px,1px,1px);
-  padding: 0; border: 0; height: 1px; width: 1px; overflow: hidden;
-}
+```js
+doc.querySelectorAll('.katex-mathml').forEach(el => el.remove())
 ```
 
-Do not remove either piece or math will either break or double-render.
+3. **CSS fallback** — `display: none !important` on `.katex-mathml` in the
+   inline `<style>` block, in case any elements are missed by the selector
+   (e.g. KaTeX version differences inside latex.js).
+
+Do not remove any of these three layers or math will break or double-render.
 
 ---
 
